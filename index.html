@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mage Survival</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div id="auto-leaderboard-display" class="auto-leaderboard-display">
+            </div>
+
+        <div id="game-container">
+            <canvas id="gameCanvas"></canvas>
+
+            <div class="game-ui">
+                <div class="ui-element">HP: <span id="hp-text">100/100</span></div>
+                <div class="ui-element">EXP: <span id="exp-text">0/100</span></div>
+                <div class="ui-element">Nível: <span id="level-text">1</span></div>
+                <div class="ui-element">Pontuação: <span id="score-text">0</span></div>
+            </div>
+
+            <div id="upgrade-screen" class="overlay" style="display: none;">
+                <h2>Escolha um Upgrade!</h2>
+                <div id="upgrade-choices" class="upgrade-choices-grid">
+                    </div>
+            </div>
+
+            <div id="game-over-screen" class="overlay" style="display: none;">
+                <h2>Game Over!</h2>
+                <p>Sua pontuação final: <span id="final-score">0</span></p>
+                <input type="text" id="playerName" placeholder="Seu nome (até 20 caracteres)" maxlength="20">
+                <button id="submit-score-button">Salvar Pontuação</button>
+                <button id="restart-game-button">Jogar Novamente</button>
+                <button id="view-leaderboard-button">Ver Placar</button>
+            </div>
+
+            <div id="leaderboard-screen" class="overlay" style="display: none;">
+                <h2>Placar de Líderes</h2>
+                <ul id="leaderboard-list">
+                    </ul>
+                <button id="close-leaderboard-button">Sair do Placar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

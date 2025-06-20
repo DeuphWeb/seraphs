@@ -1,0 +1,371 @@
+/* Geral e Fundo do Jogo */
+body {
+    margin: 0;
+    overflow: hidden; /* Garante que não haverá barras de rolagem */
+    font-family: 'Roboto', sans-serif; /* Fonte moderna e legível */
+    color: #ecf0f1; /* Cor de texto padrão clara */
+    background: linear-gradient(to bottom, #1a0f2e, #0c071a); /* Gradiente de fundo escuro mágico */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#game-container {
+    position: relative;
+    /* Define um tamanho fixo para o container do jogo */
+    width: 1200px; /* Largura padrão para o seu jogo */
+    height: 700px; /* Altura padrão para o seu jogo */
+    background-color: #0d091e; /* Fundo mais escuro para a área do jogo */
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    overflow: hidden; /* Garante que o conteúdo não vaze */
+    border: 3px solid #5e35b1; /* Borda roxa para o container */
+}
+
+/* Chão de Bloquinhos e Degraus (Visual) */
+/* Este fundo é para o container, simulando o chão */
+#game-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px; /* Altura do "chão" */
+    background-color: #0c071a; /* Base do chão */
+    background-image: linear-gradient(to top, rgba(255, 255, 255, 0.05) 1px, transparent 1px), /* Linhas horizontais */
+                      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px); /* Linhas verticais */
+    background-size: 40px 40px; /* Tamanho dos bloquinhos */
+    background-position: center bottom;
+    z-index: 0; /* Fica atrás do canvas se o canvas tiver z-index menor */
+}
+
+/* Os "degraus" nos cantos podem ser simulados com bordas ou gradientes no #game-container,
+   ou desenhados diretamente no Canvas para mais controle visual.
+   Por enquanto, o 'border-radius' e 'box-shadow' já dão um ar de profundidade.
+   Para degraus mais complexos, precisaríamos de SVGs ou desenhá-los no Canvas.
+*/
+
+
+/* Canvas do Jogo */
+canvas {
+    position: absolute; /* Permite posicionar o canvas dentro do container */
+    top: 0;
+    left: 0;
+    width: 100%; /* Ocupa 100% da largura do container */
+    height: 100%; /* Ocupa 100% da altura do container */
+    display: block;
+    background-color: transparent; /* Fundo transparente para ver o fundo do container */
+    z-index: 1; /* Garante que o Canvas fique sobre o fundo de bloquinhos */
+}
+
+
+/* UI no Topo */
+#top-ui {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 30px; /* Mais espaço entre os itens da UI */
+    z-index: 1000;
+    color: #e0aaff; /* Roxo claro */
+    font-size: 1.2em; /* Um pouco maior */
+    font-weight: bold;
+    padding: 12px 25px;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente escuro */
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid #7c4dff; /* Borda roxa clara */
+}
+
+#hp-info span, #exp-info span, #level-info span, #score-info span {
+    color: #f1c40f; /* Dourado para os valores numéricos */
+    margin-left: 8px;
+}
+
+/* Telas de Overlay (Upgrade, Game Over, Leaderboard) - Cores ajustadas para o tema mago */
+.overlay-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Mais opaco */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #ecf0f1;
+    font-size: 1.2em;
+    z-index: 2000;
+    backdrop-filter: blur(8px); /* Blur mais intenso */
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.overlay-content {
+    background: #1e133e; /* Fundo roxo escuro */
+    padding: 45px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
+    max-width: 90%;
+    min-width: 350px;
+    animation: fadeIn 0.6s ease-out;
+    border: 2px solid #a27ae0; /* Borda roxa clara */
+}
+
+h2 {
+    color: #f1c40f; /* Títulos em dourado */
+    font-size: 2.8em;
+    margin-bottom: 25px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+p {
+    margin-bottom: 30px;
+    font-size: 1.2em;
+}
+
+button {
+    background: linear-gradient(to right, #673ab7, #4527a0); /* Gradiente roxo escuro */
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+    margin: 10px; /* Espaçamento entre botões */
+}
+
+button:hover {
+    background: linear-gradient(to right, #4527a0, #673ab7);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Upgrade Screen Específico */
+.overlay {
+    position: fixed; /* Ou absolute, dependendo da sua estrutura */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro semi-transparente */
+    display: flex; /* Para centralizar conteúdo */
+    justify-content: center;
+    align-items: center;
+    z-index: 150; /* Um z-index padrão para overlays, ajustado para 200 no JS para upgrade-screen */
+    color: white;
+    text-align: center;
+    flex-direction: column; /* Para empilhar o título e as opções */
+}
+
+.upgrade-choices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 3 colunas flexíveis */
+    gap: 20px;
+    margin-top: 20px;
+    max-width: 900px; /* Largura máxima para as opções */
+    padding: 0 20px;
+}
+
+.upgrade-card {
+    background-color: #333;
+    border: 2px solid #f1c40f;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer; /* Indica que é clicável */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.upgrade-card:hover {
+    transform: translateY(-5px); /* Efeito de elevação ao passar o mouse */
+    box-shadow: 0 10px 20px rgba(241, 196, 15, 0.4);
+}
+
+#upgrade-choices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Cards um pouco maiores */
+    gap: 25px;
+    margin-top: 35px;
+}
+
+.upgrade-card {
+    background: #3e2765; /* Fundo mais roxo */
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #7c4dff;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.upgrade-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    background: #512da8; /* Mais claro no hover */
+}
+
+.upgrade-card h3 {
+    color: #f1c40f; /* Dourado para títulos de card */
+    margin-top: 0;
+    font-size: 1.6em;
+    margin-bottom: 12px;
+}
+
+.upgrade-card p {
+    color: #d1c4e9; /* Texto de descrição mais claro */
+    font-size: 1em;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* Leaderboard Screen Específico */
+.auto-leaderboard-display {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    z-index: 100;
+    font-family: 'Press Start 2P', cursive; /* Ou a fonte que estiver usando */
+    font-size: 0.8em;
+    border: 2px solid #f1c40f; /* Cor de borda para destacar */
+    text-align: center;
+    box-shadow: 0 0 15px rgba(241, 196, 15, 0.5); /* Brilho */
+}
+
+.leaderboard-entry-mini {
+    margin-bottom: 5px;
+    white-space: nowrap; /* Evita quebra de linha */
+}
+
+/* Garanta que seu .game-ui não conflite com este */
+.game-ui {
+    position: absolute;
+    top: 10px; /* Ou ajuste conforme necessário */
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9em;
+    z-index: 50; /* Garante que a UI esteja acima do canvas */
+}
+#leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 25px;
+    background: #1c1330;
+    border-radius: 10px;
+    max-height: 450px;
+    overflow-y: auto;
+    border: 1px solid #5e35b1;
+}
+
+#leaderboard-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 25px;
+    border-bottom: 1px solid #3e2765;
+    font-size: 1.2em;
+    color: #ecf0f1;
+}
+
+#leaderboard-list li:last-child {
+    border-bottom: none;
+}
+
+#leaderboard-list li:nth-child(odd) {
+    background-color: #2a1b4d;
+}
+
+#leaderboard-list li:nth-child(even) {
+    background-color: #3e2765;
+}
+
+#leaderboard-list li span:first-child {
+    font-weight: bold;
+    color: #f1c40f;
+}
+
+#leaderboard-list li span:last-child {
+    color: #e0aaff;
+}
+
+/* Entrada de Nome para Pontuação */
+#game-over-screen input[type="text"] {
+    background-color: #3e2765;
+    border: 1px solid #7c4dff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    color: #ecf0f1;
+    margin-top: 20px;
+    margin-bottom: 15px; /* Adiciona margem abaixo */
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+}
+
+#game-over-screen input[type="text"]::placeholder {
+    color: #a27ae0;
+}
+
+#game-over-screen input[type="text"]:focus {
+    outline: none;
+    border-color: #f1c40f;
+    box-shadow: 0 0 0 4px rgba(241, 196, 15, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #game-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    #top-ui {
+        font-size: 1em;
+        gap: 15px;
+        padding: 10px 15px;
+    }
+
+    .overlay-content {
+        padding: 30px;
+    }
+
+    h2 {
+        font-size: 2.2em;
+    }
+
+    .upgrade-card {
+        padding: 20px;
+    }
+
+    .upgrade-card h3 {
+        font-size: 1.4em;
+    }
+
+    .upgrade-card p {
+        font-size: 0.9em;
+    }
+}
